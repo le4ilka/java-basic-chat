@@ -28,11 +28,13 @@ public class Server {
     }
 
     public synchronized void subscribe(ClientHandler clientHandler) {
+        broadcastMessage(clientHandler.getUsername() + " connected");
         clients.add(clientHandler);
     }
 
     public synchronized void unsubscribe(ClientHandler clientHandler) {
         clients.remove(clientHandler);
+        broadcastMessage(clientHandler.getUsername() + " leaves chat");
     }
 
     public synchronized void broadcastMessage(String message) {
