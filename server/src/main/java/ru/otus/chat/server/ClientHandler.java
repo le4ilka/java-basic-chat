@@ -16,6 +16,7 @@ public class ClientHandler {
     public String getUsername() {
         return username;
     }
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -33,7 +34,7 @@ public class ClientHandler {
                 while (true) {
                     String message = in.readUTF();
                     if (message.startsWith("/")) {
-                        if (message.startsWith("/exit")){
+                        if (message.startsWith("/exit")) {
                             sendMessage("/exitok");
                             break;
                         }
@@ -44,21 +45,21 @@ public class ClientHandler {
                                 sendMessage("Неверный формат команды /auth ");
                                 continue;
                             }
-                            if (server.getAuthenticatedProvider()
-                                    .authenticate(this,elements[1], elements[2])){
+                            if (server.getAuthentificatedProvider()
+                                    .authentificate(this, elements[1], elements[2])) {
                                 break;
                             }
                             continue;
                         }
-                        // /reg login password username
+                        // /reg login password username role
                         if (message.startsWith("/reg ")) {
                             String[] elements = message.split(" ");
                             if (elements.length != 4) {
                                 sendMessage("Неверный формат команды /reg ");
                                 continue;
                             }
-                            if (server.getAuthenticatedProvider()
-                                    .registration(this,elements[1], elements[2], elements[3])){
+                            if (server.getAuthentificatedProvider()
+                                    .registration(this, elements[1], elements[2], elements[3], elements[4])) {
                                 break;
                             }
                             continue;
@@ -66,11 +67,11 @@ public class ClientHandler {
 
                     }
                     sendMessage("Перед работой необходимо пройти аутентификацию командой " +
-                            "/auth login password или регистрацию командой /reg login password username");
+                            "/auth login password или регистрацию командой /reg login password username role");
                 }
-                System.out.println("Клиент "+ username+ " успешно прошел аутентификацию");
+                System.out.println("Клиент " + username + " успешно прошел аутентификацию");
 
-                //цпкл работы
+                //цикл работы
                 while (true) {
                     String message = in.readUTF();
                     if (message.startsWith("/")) {
@@ -82,6 +83,13 @@ public class ClientHandler {
                             String[] values = message.split(" ");
                             String res = message.substring(message.indexOf(" ", 3));
                             server.privateMessage(values[1], username + " private to you : " + res);
+                        }
+                        if (message.startsWith("/kick")) {
+                            System.out.println(username + " started kick");
+                            String[] values = message.split(" ");
+                            if (server.getAuthentificatedProvider().getUserroleByUsername(username).equals("ADMIN")) {
+                                server.privateMessage(values[1], "/exitok");
+                            }
                         }
 
                     } else {
@@ -105,7 +113,7 @@ public class ClientHandler {
         }
     }
 
-    public void disconnect(){
+    public void disconnect() {
         server.unsubscribe(this);
         try {
             in.close();

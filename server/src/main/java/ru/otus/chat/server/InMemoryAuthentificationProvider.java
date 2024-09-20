@@ -3,29 +3,39 @@ package ru.otus.chat.server;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InMemoryAuthenticationProvider implements AuthenticatedProvaider{
+public class InMemoryAuthentificationProvider implements AuthentificatedProvaider {
     private class User {
         private String login;
         private String password;
         private String username;
+        private String userrole;
 
-        public User(String login, String password, String username) {
+        public User(String login, String password, String username, String userrole) {
             this.login = login;
             this.password = password;
             this.username = username;
+            this.userrole = userrole;
+        }
+
+        public String getUserrole(){
+            return userrole;
+        }
+
+        public String getUsername(){
+            return username;
         }
     }
 
     private Server server;
     private List<User> users;
 
-    public InMemoryAuthenticationProvider(Server server) {
+    public InMemoryAuthentificationProvider(Server server) {
         this.server = server;
         this.users = new ArrayList<>();
-        this.users.add(new User("login1", "password1", "username1"));
-        this.users.add(new User("qwe", "qwe", "qwe1"));
-        this.users.add(new User("asd", "asd", "asd1"));
-        this.users.add(new User("zxc", "zxc", "zxc1"));
+        this.users.add(new User("login1", "password1", "bob1", "USER"));
+        this.users.add(new User("login2", "password2", "bob2", "ADMIN"));
+        this.users.add(new User("login3", "password3", "bob3", "USER"));
+        this.users.add(new User("login4", "password4", "bob4", "USER"));
     }
 
     @Override
@@ -42,8 +52,17 @@ public class InMemoryAuthenticationProvider implements AuthenticatedProvaider{
         return null;
     }
 
+    public String getUserroleByUsername(String username){
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getUsername().equals(username)){
+                return users.get(i).getUserrole();
+            }
+        }
+        return "такой пользователь не зарегистрирован";
+    }
+
     @Override
-    public synchronized boolean authenticate(ClientHandler clientHandler, String login, String password) {
+    public synchronized boolean authentificate(ClientHandler clientHandler, String login, String password) {
         String authName = getUsernameByLoginAndPassword(login, password);
         if (authName == null) {
             clientHandler.sendMessage("Некорректный логин/пароль");
@@ -79,7 +98,7 @@ public class InMemoryAuthenticationProvider implements AuthenticatedProvaider{
     }
 
     @Override
-    public boolean registration(ClientHandler clientHandler, String login, String password, String username) {
+    public boolean registration(ClientHandler clientHandler, String login, String password, String username, String userrole) {
         if (login.trim().length() < 3 || password.trim().length() < 6
                 || username.trim().length() < 2) {
             clientHandler.sendMessage("Требования логин 3+ символа, пароль 6+ символа," +
@@ -94,11 +113,13 @@ public class InMemoryAuthenticationProvider implements AuthenticatedProvaider{
             clientHandler.sendMessage("Указанное имя пользователя уже занято");
             return false;
         }
-        users.add(new User(login, password, username));
+        users.add(new User(login, password, username, userrole));
         clientHandler.setUsername(username);
         server.subscribe(clientHandler);
         clientHandler.sendMessage("/regok " + username);
 
         return true;
     }
+
+
 }

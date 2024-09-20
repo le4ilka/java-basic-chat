@@ -9,17 +9,18 @@ import java.util.List;
 public class Server {
     private int port;
     private List<ClientHandler> clients;
-    private AuthenticatedProvaider authenticatedProvider;
+    private AuthentificatedProvaider authenticatedProvider;
 
     public Server(int port) {
         this.port = port;
         clients = new ArrayList<>();
-        authenticatedProvider = new InMemoryAuthenticationProvider(this);
+        authenticatedProvider = new InMemoryAuthentificationProvider(this);
         authenticatedProvider.initialize();
     }
-    public AuthenticatedProvaider getAuthenticatedProvider() {
+    public AuthentificatedProvaider getAuthentificatedProvider() {
         return authenticatedProvider;
     }
+
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("Сервер запущен на порту: " + port);
@@ -43,12 +44,12 @@ public class Server {
     }
 
     public synchronized void broadcastMessage(String message) {
-        for (ClientHandler client : clients) {
+        for (ClientHandler client: clients) {
             client.sendMessage(message);
         }
     }
     public boolean isUsernameBusy(String username) {
-        for (ClientHandler client : clients) {
+        for (ClientHandler client: clients) {
             if (client.getUsername().equals(username)) {
                 return true;
             }
