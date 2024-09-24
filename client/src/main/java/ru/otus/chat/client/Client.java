@@ -25,6 +25,11 @@ public class Client {
                         if (message.startsWith("/exitok")) {
                             break;
                         }
+                        if (message.startsWith("/kickok ")) {
+                            System.out.println("Вас отключили от чата");
+                            out.writeUTF("/kickok ");
+                            break;
+                        }
                         if (message.startsWith("/w ")){
                             System.out.println(message);
                         }
