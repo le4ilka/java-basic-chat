@@ -81,7 +81,7 @@ public class InMemoryAuthenticationProvider implements AuthenticatedProvaider{
         return false;
     }
 
-    private boolean isUsernameAlreadyExist(String username) {
+    public boolean isUsernameAlreadyExist(String username) {
         for (User user : users) {
             if (user.username.equals(username)) {
                 return true;

@@ -91,11 +91,23 @@ public class ClientHandler {
                             String[] values = message.split(" ");
                             String res = message.substring(message.indexOf(" ", 3));
                             server.privateMessage(values[1], username + " private to you : " + res);
-                            sendMessage("private to " + values[1] + ": " + res );
+                            sendMessage("private to " + values[1] + ": " + res);
                         }
                         if (message.startsWith("/kick ")) {
-                                String[] values = message.split(" ");
+                            String[] values = message.split(" ");
+                            if (values.length != 2) {
+                                sendMessage("Неверный формат команды /kick ");
+                                continue;
+                            }
+                            if (!isClientExists(values[1])) {
+                                sendMessage("Указанное имя пользователя не существует");
+                                continue;
+                            }
+                            if (userrole.equals("ADMIN")) {
+                                sendMessage("Вы отключили " + values[1] + " от чата");
                                 server.privateMessage(values[1], "/kickok ");
+                            }
+                            else sendMessage("Только ADMIN могут отклюдчать пользователей от чата");
                         }
 
                     } else {
@@ -117,6 +129,15 @@ public class ClientHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean isClientExists (String name) {
+        for (ClientHandler clientHandler : server.getClients()) {
+            if (clientHandler.username.equals(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void disconnect() {

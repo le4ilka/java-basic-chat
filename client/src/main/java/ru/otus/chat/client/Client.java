@@ -11,9 +11,11 @@ public class Client {
     DataInputStream in;
     DataOutputStream out;
 
+    boolean kickFlag = false;
+
     public Client() throws IOException {
         Scanner scanner = new Scanner(System.in);
-        socket = new Socket("localhost", 8188);
+        socket = new Socket("localhost", 8189);
         in = new DataInputStream(socket.getInputStream());
         out = new DataOutputStream(socket.getOutputStream());
 
@@ -28,17 +30,18 @@ public class Client {
                         if (message.startsWith("/kickok ")) {
                             System.out.println("Вас отключили от чата");
                             out.writeUTF("/kickok ");
+                            kickFlag = true;
                             break;
                         }
-                        if (message.startsWith("/w ")){
+                        if (message.startsWith("/w ")) {
                             System.out.println(message);
                         }
                         if (message.startsWith("/authok ")) {
-                            System.out.println("Аутентификация прошла успешно с именем пользователя: "+
+                            System.out.println("Аутентификация прошла успешно с именем пользователя: " +
                                     message.split(" ")[1]);
                         }
                         if (message.startsWith("/regok ")) {
-                            System.out.println("регистрация прошла успешно с именем пользователя: "+
+                            System.out.println("регистрация прошла успешно с именем пользователя: " +
                                     message.split(" ")[1]);
                         }
                     } else {
@@ -59,9 +62,10 @@ public class Client {
                 break;
             }
         }
+
     }
 
-    public void disconnect(){
+    public void disconnect() {
         try {
             in.close();
         } catch (IOException e) {
