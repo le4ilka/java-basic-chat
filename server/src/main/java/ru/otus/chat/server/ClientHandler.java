@@ -12,12 +12,16 @@ public class ClientHandler {
     private DataOutputStream out;
 
     private String username;
+    private String userrole;
 
     public String getUsername() {
         return username;
     }
     public void setUsername(String username) {
         this.username = username;
+    }
+    public void setUserrole(String userrole) {
+        this.userrole = userrole;
     }
 
     public ClientHandler(Server server, Socket socket) throws IOException {
@@ -53,12 +57,12 @@ public class ClientHandler {
                         // /reg login password username
                         if (message.startsWith("/reg ")) {
                             String[] elements = message.split(" ");
-                            if (elements.length != 4) {
+                            if (elements.length != 5) {
                                 sendMessage("Неверный формат команды /reg ");
                                 continue;
                             }
                             if (server.getAuthenticatedProvider()
-                                    .registration(this,elements[1], elements[2], elements[3])){
+                                    .registration(this,elements[1], elements[2], elements[3], elements[4])){
                                 break;
                             }
                             continue;
@@ -66,7 +70,7 @@ public class ClientHandler {
 
                     }
                     sendMessage("Перед работой необходимо пройти аутентификацию командой " +
-                            "/auth login password или регистрацию командой /reg login password username");
+                            "/auth login password или регистрацию командой /reg login password username userrole");
                 }
                 System.out.println("Клиент "+ username+ " успешно прошел аутентификацию");
 
