@@ -11,8 +11,6 @@ public class Client {
     DataInputStream in;
     DataOutputStream out;
 
-    boolean kickFlag = false;
-
     public Client() throws IOException {
         Scanner scanner = new Scanner(System.in);
         socket = new Socket("localhost", 8189);
@@ -30,7 +28,6 @@ public class Client {
                         if (message.startsWith("/kickok ")) {
                             System.out.println("Вас отключили от чата");
                             out.writeUTF("/kickok ");
-                            kickFlag = true;
                             break;
                         }
                         if (message.startsWith("/w ")) {
