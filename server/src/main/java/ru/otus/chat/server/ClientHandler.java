@@ -91,14 +91,11 @@ public class ClientHandler {
                             String[] values = message.split(" ");
                             String res = message.substring(message.indexOf(" ", 3));
                             server.privateMessage(values[1], username + " private to you : " + res);
+                            sendMessage("private to " + values[1] + ": " + res );
                         }
                         if (message.startsWith("/kick ")) {
-                            if (userrole.equals("ADMIN")) {
                                 String[] values = message.split(" ");
                                 server.privateMessage(values[1], "/kickok ");
-                            } else {
-                                sendMessage("Только ADMIN может отключать пользователей");
-                            }
                         }
 
                     } else {

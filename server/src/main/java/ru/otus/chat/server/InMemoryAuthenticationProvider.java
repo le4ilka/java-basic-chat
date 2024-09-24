@@ -44,6 +44,15 @@ public class InMemoryAuthenticationProvider implements AuthenticatedProvaider{
         return null;
     }
 
+    private String getUserroleByName(String name) {
+        for (User user : users) {
+            if (user.username.equals(name)) {
+                return user.userrole;
+            }
+        }
+        return null;
+    }
+
     @Override
     public synchronized boolean authenticate(ClientHandler clientHandler, String login, String password) {
         String authName = getUsernameByLoginAndPassword(login, password);
@@ -57,6 +66,7 @@ public class InMemoryAuthenticationProvider implements AuthenticatedProvaider{
         }
 
         clientHandler.setUsername(authName);
+        clientHandler.setUserrole(getUserroleByName(authName));
         server.subscribe(clientHandler);
         clientHandler.sendMessage("/authok " + authName);
         return true;
