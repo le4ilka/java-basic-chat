@@ -107,7 +107,7 @@ public class ClientHandler {
                                 sendMessage("Вы отключили " + values[1] + " от чата");
                                 server.privateMessage(values[1], "/kickok ");
                             }
-                            else sendMessage("Только ADMIN могут отклюдчать пользователей от чата");
+                            else sendMessage("Только ADMIN могут отключать пользователей от чата");
                         }
 
                     } else {

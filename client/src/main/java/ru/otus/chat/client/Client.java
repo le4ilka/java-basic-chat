@@ -29,6 +29,7 @@ public class Client {
                             System.out.println("Вас отключили от чата");
                             out.writeUTF("/kickok ");
                             break;
+
                         }
                         if (message.startsWith("/w ")) {
                             System.out.println(message);
@@ -54,7 +55,7 @@ public class Client {
 
         while (true) {
             String message = scanner.nextLine();
-            out.writeUTF(message);
+                out.writeUTF(message);
             if (message.startsWith("/exit")) {
                 break;
             }
@@ -78,5 +79,6 @@ public class Client {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        System.exit(0);
     }
 }
