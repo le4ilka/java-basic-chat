@@ -89,9 +89,13 @@ public class ClientHandler {
                         }
                         if (message.startsWith("/w ")) {
                             String[] values = message.split(" ");
-                            String res = message.substring(message.indexOf(" ", 3));
-                            server.privateMessage(values[1], username + " private to you : " + res);
-                            sendMessage("private to " + values[1] + ": " + res);
+                            String messageText = message.substring(message.indexOf(" ", 3));
+                            if (!isClientExists(values[1])) {
+                                sendMessage("Указанное имя пользователя не существует");
+                                continue;
+                            }
+                            server.privateMessage(values[1], username + " private to you : " + messageText);
+                            sendMessage("private to " + values[1] + ": " + messageText);
                         }
                         if (message.startsWith("/kick ")) {
                             String[] values = message.split(" ");
