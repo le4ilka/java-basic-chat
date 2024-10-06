@@ -13,7 +13,7 @@ public class Client {
 
     public Client() throws IOException {
         Scanner scanner = new Scanner(System.in);
-        socket = new Socket("localhost", 8188);
+        socket = new Socket("localhost", 8189);
         in = new DataInputStream(socket.getInputStream());
         out = new DataOutputStream(socket.getOutputStream());
 
@@ -25,15 +25,21 @@ public class Client {
                         if (message.startsWith("/exitok")) {
                             break;
                         }
-                        if (message.startsWith("/w ")){
+                        if (message.startsWith("/kickok ")) {
+                            System.out.println("Вас отключили от чата");
+                            out.writeUTF("/kickok ");
+                            break;
+
+                        }
+                        if (message.startsWith("/w ")) {
                             System.out.println(message);
                         }
                         if (message.startsWith("/authok ")) {
-                            System.out.println("Аутентификация прошла успешно с именем пользователя: "+
+                            System.out.println("Аутентификация прошла успешно с именем пользователя: " +
                                     message.split(" ")[1]);
                         }
                         if (message.startsWith("/regok ")) {
-                            System.out.println("регистрация прошла успешно с именем пользователя: "+
+                            System.out.println("регистрация прошла успешно с именем пользователя: " +
                                     message.split(" ")[1]);
                         }
                     } else {
@@ -49,14 +55,15 @@ public class Client {
 
         while (true) {
             String message = scanner.nextLine();
-            out.writeUTF(message);
+                out.writeUTF(message);
             if (message.startsWith("/exit")) {
                 break;
             }
         }
+
     }
 
-    public void disconnect(){
+    public void disconnect() {
         try {
             in.close();
         } catch (IOException e) {
@@ -72,5 +79,6 @@ public class Client {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        System.exit(0);
     }
 }

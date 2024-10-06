@@ -17,9 +17,15 @@ public class Server {
         authenticatedProvider = new InMemoryAuthenticationProvider(this);
         authenticatedProvider.initialize();
     }
+
+    public List<ClientHandler> getClients() {
+        return clients;
+    }
+
     public AuthenticatedProvaider getAuthenticatedProvider() {
         return authenticatedProvider;
     }
+
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("Сервер запущен на порту: " + port);
@@ -47,6 +53,7 @@ public class Server {
             client.sendMessage(message);
         }
     }
+
     public boolean isUsernameBusy(String username) {
         for (ClientHandler client : clients) {
             if (client.getUsername().equals(username)) {
@@ -55,6 +62,7 @@ public class Server {
         }
         return false;
     }
+
     public synchronized void privateMessage(String name, String message) {
         for (ClientHandler client : clients) {
             if (name.equals(client.getUsername())) {

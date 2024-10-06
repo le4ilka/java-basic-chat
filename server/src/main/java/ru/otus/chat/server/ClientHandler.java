@@ -12,12 +12,18 @@ public class ClientHandler {
     private DataOutputStream out;
 
     private String username;
+    private String userrole;
 
     public String getUsername() {
         return username;
     }
+
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public void setUserrole(String userrole) {
+        this.userrole = userrole;
     }
 
     public ClientHandler(Server server, Socket socket) throws IOException {
@@ -33,7 +39,7 @@ public class ClientHandler {
                 while (true) {
                     String message = in.readUTF();
                     if (message.startsWith("/")) {
-                        if (message.startsWith("/exit")){
+                        if (message.startsWith("/exit")) {
                             sendMessage("/exitok");
                             break;
                         }
@@ -45,7 +51,7 @@ public class ClientHandler {
                                 continue;
                             }
                             if (server.getAuthenticatedProvider()
-                                    .authenticate(this,elements[1], elements[2])){
+                                    .authenticate(this, elements[1], elements[2])) {
                                 break;
                             }
                             continue;
@@ -53,12 +59,12 @@ public class ClientHandler {
                         // /reg login password username
                         if (message.startsWith("/reg ")) {
                             String[] elements = message.split(" ");
-                            if (elements.length != 4) {
+                            if (elements.length != 5) {
                                 sendMessage("Неверный формат команды /reg ");
                                 continue;
                             }
                             if (server.getAuthenticatedProvider()
-                                    .registration(this,elements[1], elements[2], elements[3])){
+                                    .registration(this, elements[1], elements[2], elements[3], elements[4])) {
                                 break;
                             }
                             continue;
@@ -66,9 +72,9 @@ public class ClientHandler {
 
                     }
                     sendMessage("Перед работой необходимо пройти аутентификацию командой " +
-                            "/auth login password или регистрацию командой /reg login password username");
+                            "/auth login password или регистрацию командой /reg login password username userrole");
                 }
-                System.out.println("Клиент "+ username+ " успешно прошел аутентификацию");
+                System.out.println("Клиент " + username + " успешно прошел аутентификацию");
 
                 //цпкл работы
                 while (true) {
@@ -78,14 +84,34 @@ public class ClientHandler {
                             sendMessage("/exitok");
                             break;
                         }
+                        if (message.startsWith("/kickok ")) {
+                            break;
+                        }
                         if (message.startsWith("/w ")) {
                             String[] values = message.split(" ");
                             String res = message.substring(message.indexOf(" ", 3));
                             server.privateMessage(values[1], username + " private to you : " + res);
+                            sendMessage("private to " + values[1] + ": " + res);
+                        }
+                        if (message.startsWith("/kick ")) {
+                            String[] values = message.split(" ");
+                            if (values.length != 2) {
+                                sendMessage("Неверный формат команды /kick ");
+                                continue;
+                            }
+                            if (!isClientExists(values[1])) {
+                                sendMessage("Указанное имя пользователя не существует");
+                                continue;
+                            }
+                            if (userrole.equals("ADMIN")) {
+                                sendMessage("Вы отключили " + values[1] + " от чата");
+                                server.privateMessage(values[1], "/kickok ");
+                            }
+                            else sendMessage("Только ADMIN могут отключать пользователей от чата");
                         }
 
                     } else {
-                        server.broadcastMessage(username + " : " + message);
+                        server.broadcastMessage(username + ": " + message);
                     }
                 }
 
@@ -105,7 +131,16 @@ public class ClientHandler {
         }
     }
 
-    public void disconnect(){
+    private boolean isClientExists (String name) {
+        for (ClientHandler clientHandler : server.getClients()) {
+            if (clientHandler.username.equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void disconnect() {
         server.unsubscribe(this);
         try {
             in.close();
